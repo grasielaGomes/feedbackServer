@@ -8,13 +8,17 @@ export const routes = express.Router();
 routes.post("/feedback", async (req, res) => {
   const { message, screenshot, type } = req.body;
 
-  const feedbackRepository = new PrismaFeedbackRepository();
-  const nodemailerAdapter = new NodemailerAdapter();
-  const submitFeedbackService = new SubmitFeedbackService(
-    feedbackRepository,
-    nodemailerAdapter
-  );
+  try {
+    const feedbackRepository = new PrismaFeedbackRepository();
+    const nodemailerAdapter = new NodemailerAdapter();
+    const submitFeedbackService = new SubmitFeedbackService(
+      feedbackRepository,
+      nodemailerAdapter
+    );
 
-  await submitFeedbackService.execute({ message, screenshot, type });
-  res.status(201).send();
+    await submitFeedbackService.execute({ message, screenshot, type });
+    res.status(201).send();
+  } catch (error: any) {
+    res.status(500).send(error.message);
+  }
 });
